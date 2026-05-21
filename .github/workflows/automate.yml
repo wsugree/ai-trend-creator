@@ -28,6 +28,8 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }} # ตัวใหม่
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}     # ตัวใหม่
           TZ: 'Asia/Bangkok' # เซ็ตเวลาให้เป็นเวลาไทย
         run: python main.py
 
