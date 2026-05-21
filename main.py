@@ -9,6 +9,7 @@ from google.genai import types
 
 # 1. โหลด API Keys
 def load_env():
+    # ลองเปิดไฟล์ .envดูก่อน (ใช้ตอนรันในคอมพิวเตอร์)
     try:
         with open('.env', 'r', encoding='utf-8') as f:
             for line in f:
@@ -16,8 +17,8 @@ def load_env():
                     key, value = line.strip().split('=', 1)
                     os.environ[key] = value
     except FileNotFoundError:
-        print("❌ ไม่พบไฟล์ .env")
-        exit(1)
+        # ถ้ารันบน Cloud จะหาไฟล์นี้ไม่เจอ ให้ข้ามไปเลย ไม่ต้อง exit(1) แล้ว
+        print("ℹ️ ไม่พบไฟล์ .env (กำลังใช้งานคีย์จากระบบ Cloud แทน)")
 
 # 2. โครงสร้างข้อมูล (Data Structure)
 class ContentIdea(BaseModel):
