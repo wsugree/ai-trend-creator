@@ -1,0 +1,40 @@
+name: AI Trend Automator 24/7
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # สั่งรันทุกๆ 30 นาที
+  workflow_dispatch: # ปุ่มกดรันเองแบบ Manual (เผื่ออยากเทส)
+
+permissions:
+  contents: write # อนุญาตให้บอทสร้างไฟล์ .md ลงในโฟลเดอร์เราได้
+
+jobs:
+  run-ai-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: 🧠 Run AI Agent & Generate Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          TZ: 'Asia/Bangkok' # เซ็ตเวลาให้เป็นเวลาไทย
+        run: python main.py
+
+      - name: 💾 Save Script back to GitHub
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add outputs/
+          git commit -m "🤖 AI Agent: Added new trend script" || echo "No new files to commit"
+          git push
