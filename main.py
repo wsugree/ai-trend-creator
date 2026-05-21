@@ -18,9 +18,9 @@ def load_env():
         print("ℹ️ กำลังรันบน Cloud ใช้คีย์จากระบบ (Secrets)")
 
 class ContentIdea(BaseModel):
-    topic: str = Field(description="หัวข้อคอนเทนต์ที่กำลังเป็นกระแส แปลเป็นภาษาไทย")
-    hook: str = Field(description="ประโยคเปิดคลิป 3 วินาทีแรกที่ดึงดูดใจวัยรุ่น (ภาษาไทย)")
-    script_steps: List[str] = Field(description="สคริปต์หรือลำดับการเล่าเรื่องแบบสั้นๆ ทีละฉาก")
+    topic: str = Field(description="หัวข้อเรื่องลึกลับหรือคดีปริศนา แปลเป็นภาษาไทย")
+    hook: str = Field(description="ประโยคเปิดคลิป 3 วิแรกแบบระทึกขวัญชวนสงสัย (ภาษาไทย)")
+    script_steps: List[str] = Field(description="สคริปต์การเล่าเรื่องทีละฉาก ค่อยๆ เผยความลับให้น่าติดตาม")
 
 class TrendReport(BaseModel):
     overview: str = Field(description="สรุปภาพรวมว่าตอนนี้คนกำลังสนใจเรื่องอะไร (ภาษาไทย)")
@@ -29,7 +29,12 @@ class TrendReport(BaseModel):
 async def fetch_trends():
     url = "https://api.search.brave.com/res/v1/web/search"
     headers = {"Accept": "application/json", "X-Subscription-Token": os.getenv("BRAVE_API_KEY")}
-    params = {"q": "latest AI and tech trends", "freshness": "pd", "count": 10}
+    # ค้นหาเรื่องลึกลับ คดีปริศนา หรือเรื่องแปลกที่เป็นกระแส (ขยายเวลาเป็นพ้น 1 สัปดาห์ 'pw' เพื่อให้ได้เนื้อหาที่แน่นขึ้น)
+    params = {
+        "q": "trending unsolved mysteries OR viral creepy stories OR bizarre history facts", 
+        "freshness": "pw", 
+        "count": 10
+    }
     
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers, params=params)
@@ -41,10 +46,12 @@ async def fetch_trends():
 def generate_content(raw_data: str):
     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
     prompt = (
-        "You are an expert Content Creator. Analyze the following trending news. "
-        "Synthesize what people are interested in right now, and create 3 viral short-form video "
-        "(TikTok/Shorts) content ideas based on these trends. Make it highly engaging.\n\n"
-        f"TRENDING DATA:\n{raw_data}"
+        "You are a master of Suspense and Mystery Storytelling. Analyze the following trending data. "
+        "Select the most fascinating or spine-chilling mysteries and create 3 viral short-form video "
+        "(TikTok/Shorts) content ideas in Thai. "
+        "The Hook must be extremely mysterious and suspenseful to grab attention within 3 seconds. "
+        "Keep the audience hooked with a plot twist or cliffhanger in the script steps.\n\n"
+        f"MYSTERY DATA:\n{raw_data}"
     )
     response = client.models.generate_content(
         model='gemini-2.5-flash', 
