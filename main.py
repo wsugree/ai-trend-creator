@@ -45,19 +45,33 @@ async def fetch_trends():
 
 def generate_content(raw_data: str):
     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    
+    # อัปเกรดคำสั่งเป็น จิตวิญญาณนักเล่าเรื่องระทึกขวัญระดับฮอลลีวูด 🎬
     prompt = (
-        "You are a master of Suspense and Mystery Storytelling. Analyze the following trending data. "
-        "Select the most fascinating or spine-chilling mysteries and create 3 viral short-form video "
-        "(TikTok/Shorts) content ideas in Thai. "
-        "The Hook must be extremely mysterious and suspenseful to grab attention within 3 seconds. "
-        "Keep the audience hooked with a plot twist or cliffhanger in the script steps.\n\n"
+        "You are a master of Cinematic Suspense and Mystery Storytelling. Analyze the following trending data "
+        "and select the single most chilling, mind-bending, or bizarre mystery story. "
+        "Create 3 viral short-form video (TikTok/Shorts) content ideas and highly detailed scripts in THAI. "
+        "Apply these psychological storytelling rules strictly:\n\n"
+        
+        "1. THE HOOK (First 3 seconds): Open with a shocking, unexplainable fact, a creepy question, or a statement that violates common sense. "
+        "Never say hello or introduce the channel. Start the story immediately. (e.g., 'นี่คือภาพถ่ายสุดท้ายของนักท่องเที่ยว 9 คน ก่อนที่พวกเขาจะกลายเป็นศพในสภาพที่ตาทั้งสองข้างหายไป...')\n"
+        
+        "2. SHOW, DON'T TELL (Atmospheric Details): Instead of just saying 'it was scary', use sensory and atmospheric words in Thai to build dread and curiosity "
+        "(e.g., 'เสียงเคาะประตูตอนตี 3', 'บันทึกหน้าสุดท้ายที่ถูกฉีกขาด', 'รอยเท้าที่สิ้นสุดลงตรงหน้าผา'). Keep sentences short, punchy, and fast-paced.\n"
+        
+        "3. THE CLIFFHANGER / PLOT TWIST (The End): Never wrap up the story nicely. End with an eerie unanswered question, a chilling realization, "
+        "or a cliffhanger that forces the viewer to comment their theories, share, or rewatch the video to find clues.\n\n"
+        
         f"MYSTERY DATA:\n{raw_data}"
     )
+    
     response = client.models.generate_content(
         model='gemini-2.5-flash', 
         contents=prompt,
         config=types.GenerateContentConfig(
-            response_mime_type="application/json", response_schema=TrendReport, temperature=0.7
+            response_mime_type="application/json",
+            response_schema=TrendReport,
+            temperature=0.8, # เพิ่มความคิดสร้างสรรค์และโทนเสียงให้ดูลึกลับขึ้น
         )
     )
     return response.text
